@@ -7,6 +7,3 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright © Octopus Deploy 2016")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyTitle("Octopus.Configuration")]
-
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("e641abc6-e748-4415-8cbb-cc0f85b31912")]
