@@ -1,7 +1,7 @@
 {
   "version": "0.0.0-*",
 
-  "publishOptions": {
+  "packOptions": {
     "iconUrl": "http://i.octopusdeploy.com/resources/Avatar3_360.png"
   },
 
