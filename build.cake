@@ -17,6 +17,7 @@ var configuration = Argument("configuration", "Release");
 // GLOBAL VARIABLES
 ///////////////////////////////////////////////////////////////////////////////
 var artifactsDir = "./artifacts";
+var localPackagesDir = "../LocalPackages";
 var packageName = "Octopus.Configuration";
 var globalAssemblyFile = "./source/" + packageName + "/Properties/AssemblyInfo.cs";
 var projectToPackage = "./source/" + packageName;
@@ -27,7 +28,7 @@ var gitVersionInfo = GitVersion(new GitVersionSettings {
     OutputType = GitVersionOutput.Json
 });
 
-var nugetVersion = isContinuousIntegrationBuild ? gitVersionInfo.NuGetVersion : "0.0.0";
+var nugetVersion = gitVersionInfo.NuGetVersion;
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -53,7 +54,8 @@ Task("__Default")
     .IsDependentOn("__Build")
     .IsDependentOn("__UpdateProjectJsonVersion")
     .IsDependentOn("__Pack")
-	.IsDependentOn("__Publish");
+	.IsDependentOn("__Publish")
+	.IsDependentOn("__CopyToLocalPackages");
 
 Task("__Clean")
     .Does(() =>
@@ -91,7 +93,6 @@ Task("__Build")
 });
 
 Task("__UpdateProjectJsonVersion")
-    .WithCriteria(isContinuousIntegrationBuild)
     .Does(() =>
 {
     var projectToPackagePackageJson = $"{projectToPackage}/project.json";
@@ -124,20 +125,28 @@ Task("__Publish")
 
     if (shouldPushToMyGet)
     {
-        NuGetPush("artifacts/" + packageName + "." + nugetVersion + ".nupkg", new NuGetPushSettings {
+        NuGetPush($"{packageName}.{nugetVersion}.nupkg", new NuGetPushSettings {
             Source = "https://octopus.myget.org/F/octopus-dependencies/api/v3/index.json",
             ApiKey = EnvironmentVariable("MyGetApiKey")
         });
     }
     if (shouldPushToNuGet)
     {
-        NuGetPush("artifacts/" + packageName + "." + nugetVersion + ".nupkg", new NuGetPushSettings {
+        NuGetPush($"{packageName}.{nugetVersion}.nupkg", new NuGetPushSettings {
             Source = "https://www.nuget.org/api/v2/package",
             ApiKey = EnvironmentVariable("NuGetApiKey")
         });
     }
 });
 
+Task("__CopyToLocalPackages")
+    .WithCriteria(BuildSystem.IsLocalBuild)
+    .IsDependentOn("__Pack")
+    .Does(() =>
+{
+    CreateDirectory(localPackagesDir);
+    CopyFileToDirectory(Path.Combine(artifactsDir, $"{packageName}.{nugetVersion}.nupkg"), localPackagesDir);
+});
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
