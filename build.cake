@@ -69,7 +69,6 @@ Task("__Restore")
     .Does(() => DotNetCoreRestore());
 	
 Task("__UpdateAssemblyVersionInformation")
-    .WithCriteria(isContinuousIntegrationBuild)
     .Does(() =>
 {
      GitVersion(new GitVersionSettings {
