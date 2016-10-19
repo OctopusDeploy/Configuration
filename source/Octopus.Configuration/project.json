@@ -1,5 +1,6 @@
 {
   "version": "0.0.0-*",
+  "iconUrl": "http://i.octopusdeploy.com/resources/Avatar3_360.png",
   "dependencies": {
     "System.Security.Cryptography.ProtectedData": "4.0.0"
   },
