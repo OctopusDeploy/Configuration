@@ -21,6 +21,7 @@ var localPackagesDir = "../LocalPackages";
 var packageName = "Octopus.Configuration";
 var globalAssemblyFile = "./source/" + packageName + "/Properties/AssemblyInfo.cs";
 var projectToPackage = "./source/" + packageName;
+var cleanups = new List<IDisposable>(); 
 
 var isContinuousIntegrationBuild = !BuildSystem.IsLocalBuild;
 
@@ -40,7 +41,11 @@ Setup(context =>
 
 Teardown(context =>
 {
-    Information("Finished running tasks.");
+    Information("Cleaning up");
+    foreach(var item in cleanups)
+        item.Dispose();
+
+		Information("Finished running tasks.");
 });
 
 //////////////////////////////////////////////////////////////////////
@@ -71,7 +76,8 @@ Task("__Restore")
 Task("__UpdateAssemblyVersionInformation")
     .Does(() =>
 {
-     GitVersion(new GitVersionSettings {
+    cleanups.Add(new AutoRestoreFile(globalAssemblyFile));
+	GitVersion(new GitVersionSettings {
         UpdateAssemblyInfo = true,
         UpdateAssemblyInfoFilePath = globalAssemblyFile
     });
@@ -95,6 +101,7 @@ Task("__UpdateProjectJsonVersion")
     .Does(() =>
 {
     var projectToPackagePackageJson = $"{projectToPackage}/project.json";
+    cleanups.Add(new AutoRestoreFile(projectToPackagePackageJson));
     Information("Updating {0} version -> {1}", projectToPackagePackageJson, nugetVersion);
 
     TransformConfig(projectToPackagePackageJson, projectToPackagePackageJson, new TransformationCollection {
@@ -146,6 +153,19 @@ Task("__CopyToLocalPackages")
     CreateDirectory(localPackagesDir);
     CopyFileToDirectory(Path.Combine(artifactsDir, $"{packageName}.{nugetVersion}.nupkg"), localPackagesDir);
 });
+
+private class AutoRestoreFile : IDisposable
+{
+	private byte[] _contents;
+	private string _filename;
+	public AutoRestoreFile(string filename)
+	{
+		_filename = filename;
+		_contents = IO.File.ReadAllBytes(filename);
+	}
+
+	public void Dispose() => IO.File.WriteAllBytes(_filename, _contents);
+}
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
