@@ -41,11 +41,7 @@ Setup(context =>
 
 Teardown(context =>
 {
-    Information("Cleaning up");
-    foreach(var item in cleanups)
-        item.Dispose();
-
-		Information("Finished running tasks.");
+	Information("Finished running tasks.");
 });
 
 //////////////////////////////////////////////////////////////////////
@@ -55,9 +51,7 @@ Teardown(context =>
 Task("__Default")
     .IsDependentOn("__Clean")
     .IsDependentOn("__Restore")
-    .IsDependentOn("__UpdateAssemblyVersionInformation")
     .IsDependentOn("__Build")
-    .IsDependentOn("__UpdateProjectJsonVersion")
     .IsDependentOn("__Pack")
 	.IsDependentOn("__Publish")
 	.IsDependentOn("__CopyToLocalPackages");
@@ -71,41 +65,15 @@ Task("__Clean")
 });
 
 Task("__Restore")
-    .Does(() => DotNetCoreRestore());
+    .Does(() => DotNetCoreRestore("source"));
 	
-Task("__UpdateAssemblyVersionInformation")
-    .Does(() =>
-{
-    cleanups.Add(new AutoRestoreFile(globalAssemblyFile));
-	GitVersion(new GitVersionSettings {
-        UpdateAssemblyInfo = true,
-        UpdateAssemblyInfoFilePath = globalAssemblyFile
-    });
-
-    Information("AssemblyVersion -> {0}", gitVersionInfo.AssemblySemVer);
-    Information("AssemblyFileVersion -> {0}", $"{gitVersionInfo.MajorMinorPatch}.0");
-    Information("AssemblyInformationalVersion -> {0}", gitVersionInfo.InformationalVersion);
-});
-
 Task("__Build")
-    .IsDependentOn("__UpdateAssemblyVersionInformation")
     .Does(() =>
 {
-    DotNetCoreBuild("**/project.json", new DotNetCoreBuildSettings
+    DotNetCoreBuild("source", new DotNetCoreBuildSettings
     {
-        Configuration = configuration
-    });
-});
-
-Task("__UpdateProjectJsonVersion")
-    .Does(() =>
-{
-    var projectToPackagePackageJson = $"{projectToPackage}/project.json";
-    cleanups.Add(new AutoRestoreFile(projectToPackagePackageJson));
-    Information("Updating {0} version -> {1}", projectToPackagePackageJson, nugetVersion);
-
-    TransformConfig(projectToPackagePackageJson, projectToPackagePackageJson, new TransformationCollection {
-        { "version", nugetVersion }
+        Configuration = configuration,
+        ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}")
     });
 });
 
@@ -116,27 +84,22 @@ Task("__Pack")
 	{
 		Configuration = configuration,
 		OutputDirectory = artifactsDir,
-		NoBuild = true
+		NoBuild = true,
+        ArgumentCustomization = args => args.Append($"/p:Version={nugetVersion}")
 	});
 });
 
 Task("__Publish")
-    .WithCriteria(isContinuousIntegrationBuild)
+    .WithCriteria(BuildSystem.IsRunningOnTeamCity)
+    .IsDependentOn("__Pack")
     .Does(() =>
 {
-    var isPullRequest = !String.IsNullOrEmpty(EnvironmentVariable("APPVEYOR_PULL_REQUEST_NUMBER"));
-    var isMasterBranch = EnvironmentVariable("APPVEYOR_REPO_BRANCH") == "master" && !isPullRequest;
-    var shouldPushToMyGet = !BuildSystem.IsLocalBuild;
-    var shouldPushToNuGet = !BuildSystem.IsLocalBuild && isMasterBranch;
-
-    if (shouldPushToMyGet)
-    {
-        NuGetPush($"{artifactsDir}/{packageName}.{nugetVersion}.nupkg", new NuGetPushSettings {
-            Source = "https://octopus.myget.org/F/octopus-dependencies/api/v3/index.json",
-            ApiKey = EnvironmentVariable("MyGetApiKey")
-        });
-    }
-    if (shouldPushToNuGet)
+    NuGetPush($"{artifactsDir}/{packageName}.{nugetVersion}.nupkg", new NuGetPushSettings {
+		Source = "https://octopus.myget.org/F/octopus-dependencies/api/v3/index.json",
+		ApiKey = EnvironmentVariable("MyGetApiKey")
+	});
+	
+    if (string.IsNullOrWhiteSpace(gitVersionInfo.PreReleaseLabel))
     {
         NuGetPush($"{artifactsDir}/{packageName}.{nugetVersion}.nupkg", new NuGetPushSettings {
             Source = "https://www.nuget.org/api/v2/package",
@@ -153,19 +116,6 @@ Task("__CopyToLocalPackages")
     CreateDirectory(localPackagesDir);
     CopyFileToDirectory(Path.Combine(artifactsDir, $"{packageName}.{nugetVersion}.nupkg"), localPackagesDir);
 });
-
-private class AutoRestoreFile : IDisposable
-{
-	private byte[] _contents;
-	private string _filename;
-	public AutoRestoreFile(string filename)
-	{
-		_filename = filename;
-		_contents = IO.File.ReadAllBytes(filename);
-	}
-
-	public void Dispose() => IO.File.WriteAllBytes(_filename, _contents);
-}
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
