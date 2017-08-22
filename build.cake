@@ -118,7 +118,7 @@ Task("Publish")
 });
 
 Task("Default")
-    .IsDependentOn("CopyToLocalPackages");
+    .IsDependentOn("Publish");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
