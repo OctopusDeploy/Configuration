@@ -103,14 +103,14 @@ Task("Publish")
     .WithCriteria(BuildSystem.IsRunningOnTeamCity)
     .Does(() =>
 {
-	NuGetPush($"{artifactsDir}Octopus.Configuration.{nugetVersion}.nupkg", new NuGetPushSettings {
+	NuGetPush($"{artifactsDir}/Octopus.Configuration.{nugetVersion}.nupkg", new NuGetPushSettings {
 		Source = "https://octopus.myget.org/F/octopus-dependencies/api/v3/index.json",
 		ApiKey = EnvironmentVariable("MyGetApiKey")
 	});
 
     if (gitVersionInfo.PreReleaseTag == "")
     {
-          NuGetPush($"{artifactsDir}Octopus.Configuration.{nugetVersion}.nupkg", new NuGetPushSettings {
+          NuGetPush($"{artifactsDir}/Octopus.Configuration.{nugetVersion}.nupkg", new NuGetPushSettings {
             Source = "https://www.nuget.org/api/v2/package",
             ApiKey = EnvironmentVariable("NuGetApiKey")
         });
