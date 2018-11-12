@@ -4,6 +4,8 @@
     <AssemblyName>Octopus.Configuration</AssemblyName>
     <PackageId>Octopus.Configuration</PackageId>
     <PackageIconUrl>http://i.octopusdeploy.com/resources/Avatar3_360.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/OctopusDeploy/Configuration/</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/OctopusDeploy/Configuration/blob/master/LICENSE.txt</PackageLicenseUrl>
     <Authors>Octopus Deploy</Authors>
     <Description>Configuration interfaces for Octopus, an opinionated deployment solution for .NET applications</Description>
     <NeutralLanguage>en-US</NeutralLanguage>
