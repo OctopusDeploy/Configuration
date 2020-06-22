@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="C:\Development\Octopus\Configuration\source" t="IncludeFlat">
+    <e p="C:\source\Configuration\source" t="IncludeFlat">
       <e p="Octopus.Configuration" t="IncludeRecursive">
         <e p="bin" t="ExcludeRecursive" />
         <e p="IKeyValueStore.cs" t="Include" />
@@ -10,17 +10,21 @@
           <e p="Debug" t="Include">
             <e p="net45" t="Include">
               <e p="Octopus.Configuration.AssemblyInfo.cs" t="Include" />
+              <e p="PlatformCompat.Analyzers.settings" t="Include" />
             </e>
             <e p="netstandard1.3" t="Include">
               <e p="Octopus.Configuration.AssemblyInfo.cs" t="Include" />
+              <e p="PlatformCompat.Analyzers.settings" t="Include" />
             </e>
           </e>
         </e>
         <e p="Octopus.Configuration.csproj" t="IncludeRecursive" />
+        <e p="ProtectionLevel.cs" t="Include" />
       </e>
       <e p="OctopusConfiguration.sln" t="IncludeFlat" />
       <e p="packages" t="ExcludeRecursive" />
     </e>
-    <e p="C:\Users\rober\.Rider2018.1\system\resharper-host\local\Transient\ReSharperHost\v12\SolutionCaches\_OctopusConfiguration.803463945.00" t="ExcludeRecursive" />
+    <e p="C:\Users\administrator.SLEWDEV\AppData\local\JetBrains\Rider2020.1\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\administrator.SLEWDEV\AppData\local\JetBrains\Rider2020.1\resharper-host\local\Transient\ReSharperHost\v201\SolutionCaches\_OctopusConfiguration.140901770.00" t="ExcludeRecursive" />
   </component>
 </project>
