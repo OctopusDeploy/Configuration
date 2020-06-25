@@ -67,3 +67,4 @@ source/OctopusTools.v2.ncrunchsolution
 /publish/
 TestResult.xml
 *.received.*
+.idea
