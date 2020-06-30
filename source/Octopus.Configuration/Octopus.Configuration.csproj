@@ -10,6 +10,8 @@
     <Description>Configuration interfaces for Octopus, an opinionated deployment solution for .NET applications</Description>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Copyright>Copyright © Octopus Deploy 2017</Copyright>
+    <LangVersion>8</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Reference Include="System" />
