@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Octopus.Configuration
 {
@@ -6,6 +7,7 @@ namespace Octopus.Configuration
     {
         string? Get(string name, ProtectionLevel protectionLevel = ProtectionLevel.None);
 
+        [return: NotNullIfNotNull("defaultValue")]
         TData Get<TData>(string name, TData defaultValue = default, ProtectionLevel protectionLevel = ProtectionLevel.None);
     }
 }
