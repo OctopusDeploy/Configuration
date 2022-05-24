@@ -10,11 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_", "_", "{C4B1FD1E-C638-4F
 		..\.gitattributes = ..\.gitattributes
 		..\.gitignore = ..\.gitignore
 		..\CONTRIBUTING.md = ..\CONTRIBUTING.md
-		..\GitVersion.yml = ..\GitVersion.yml
 		..\global.json = ..\global.json
 		..\LICENSE.txt = ..\LICENSE.txt
 		..\readme.md = ..\readme.md
 		..\tools\packages.config = ..\tools\packages.config
+		..\octoversion.json = ..\octoversion.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "..\build\_build.csproj", "{C1E6AC1A-FC30-493C-828E-F6272F0A3F4B}"
