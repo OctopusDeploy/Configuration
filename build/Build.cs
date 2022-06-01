@@ -16,8 +16,7 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 [ShutdownDotNetAfterServerBuild]
 class Build : NukeBuild
 {
-    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-    readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")] readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
     [Solution(GenerateProjects = true)] readonly Solution Solution;
 
@@ -79,7 +78,7 @@ class Build : NukeBuild
                 .DisableIncludeSymbols()
                 .SetVerbosity(DotNetVerbosity.Normal));
         });
-    
+
     Target CopyToLocalPackages => _ => _
         .OnlyWhenStatic(() => IsLocalBuild)
         .TriggeredBy(Pack)
@@ -93,6 +92,6 @@ class Build : NukeBuild
     Target Default => _ => _
         .DependsOn(Pack)
         .DependsOn(CopyToLocalPackages);
-    
+
     public static int Main() => Execute<Build>(x => x.Default);
 }
