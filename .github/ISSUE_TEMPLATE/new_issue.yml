@@ -1,6 +1,6 @@
 name: New Issue
 description: File a new issue
-labels: [state/triage, team/fire-and-motion]
+labels: [state/triage, team/core-platform]
 body:
   - type: markdown
     attributes:
